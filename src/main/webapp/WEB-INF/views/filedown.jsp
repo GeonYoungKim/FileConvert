@@ -11,7 +11,9 @@
     request.setCharacterEncoding("UTF-8");
     // 파일 업로드된 경로
     String root = request.getSession().getServletContext().getRealPath("/");
-    String savePath = "C:\\Users\\c2619\\file_before";
+    
+    //변환된 파일을 저장하는 폴더 지정
+    String savePath = "C:\\Users\\gunyoungkim\\file_after";
  
     // 서버에 실제 저장된 파일명
     String filename = (String)request.getAttribute("filename") ;

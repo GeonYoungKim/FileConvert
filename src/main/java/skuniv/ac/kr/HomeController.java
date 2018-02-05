@@ -65,7 +65,7 @@ public class HomeController {
 		
 		MultipartFile fn=file.getFile("photo");
     	
-        String rootPath = "C:\\Users\\c2619";
+        String rootPath = "C:\\Users\\gunyoungkim";
         System.out.println(rootPath);
         File dir = new File(rootPath + File.separator + "file_before");
         System.out.println(dir);
@@ -115,10 +115,8 @@ public class HomeController {
         //sb에 있는 값을 ","으로 StringTokenizer 혹은 split을 사용하여 변환 로직 수행!!!
         //수행한 값을 다시 파일 출력으로 만들어 준다 대신 이번엔  after 폴더로 저장 출력  
         System.out.println(sb);
-        String filename=date.format(today)+"_before.txt";
+        String filename=date.format(today)+"_after.txt";
         return "redirect:/filedown?filename="+filename;
-        
-        
         
         
     }
