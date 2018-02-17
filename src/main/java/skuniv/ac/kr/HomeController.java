@@ -2,9 +2,11 @@ package skuniv.ac.kr;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +41,9 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 @Controller
 public class HomeController {
 	
+	List<String> file_list=new ArrayList<String>();
+	
+	
 	@RequestMapping(value = "/home")
 	public String home(HttpServletRequest request,Model model) {
 		
@@ -51,34 +57,83 @@ public class HomeController {
 		request.setAttribute("filename", filename);
 		return "filedown";
 	}
-	@RequestMapping(value = "/photo", method=RequestMethod.POST)
-    public String uploadImageCtlr(ModelMap model,
-                                  HttpServletRequest request,
-                                  MultipartRequest file
-                                  ) throws IOException{
-    	
-		request.setCharacterEncoding("UTF-8");
+	@RequestMapping(value = "/down")
+	public String down(HttpServletRequest request,Model model) {
+		Date today = new Date();
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-mm-ss");
+        String first_file_name=date.format(today);
+        String filename_result=first_file_name+"_result.txt";
+		BufferedWriter bw=null;
+		BufferedReader br1 = null;
+		BufferedReader br2 = null;
+		BufferedReader br3 = null;
+		BufferedReader br4 = null;
+		BufferedReader br5 = null;
 		
-		//내부온도인지 전압인지 등등 받아옴 -> 이것으로 어떤 변환 로직을 할지 결정하면 된다.
-		System.out.println(request.getParameter("select_way"));
-		
-		
-		MultipartFile fn=file.getFile("photo");
-    	
-        String rootPath = "C:\\Users\\gunyoungkim";
-        System.out.println(rootPath);
+		try{
+			bw = new BufferedWriter(new FileWriter("C:\\Users\\gunyoungkim\\file_after\\"+filename_result));
+			br1 = new BufferedReader(new FileReader(file_list.get(0)));
+			br2 = new BufferedReader(new FileReader(file_list.get(1)));
+			br3 = new BufferedReader(new FileReader(file_list.get(2)));
+			br4 = new BufferedReader(new FileReader(file_list.get(3)));
+			br5 = new BufferedReader(new FileReader(file_list.get(4)));
+			 
+	        String str1 = br1.readLine();
+	        String str2 = br2.readLine();
+	        String str3 = br3.readLine();
+	        String str4 = br4.readLine();
+	        String str5 = br5.readLine();
+	        
+	        String[] voltage=str1.split(",");
+	        String[] degree=str1.split(",");
+	        String[] period=str1.split(",");
+	        String[] buffer=str1.split(",");
+	        String[] battery=str1.split(",");
+	        int i=0;        
+	         
+	       while(true) {
+	    	  bw.write(voltage[i]+",");
+	    	  bw.write(degree[i]+",");
+	    	  bw.write(period[i]+",");
+	    	  bw.write(buffer[i]+",");
+	    	  bw.write(battery[i]+",");
+	    	  i++;
+	    	  if(i==voltage.length) break;
+	    	  
+	         }
+			
+			
+		}catch(IOException ioe){
+			ioe.getMessage();
+		}finally{
+			try{
+				bw.close();
+				br1.close();
+				br2.close();
+				br3.close();
+				br4.close();
+				br5.close();
+				
+			}catch(Exception e){			
+			}
+		}
+		file_list.clear();
+		System.out.println(file_list.size());
+        
+        return "redirect:/filedown?filename="+filename_result;
+	}
+	
+	public void upload(MultipartFile fn,String filename) {
+		String rootPath = "C:\\Users\\gunyoungkim";
+		   
+        
         File dir = new File(rootPath + File.separator + "file_before");
-        System.out.println(dir);
+        
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        Date today = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-mm-ss");
-
-        File serverFile = new File(dir.getAbsolutePath() + File.separator + date.format(today)+"_before.txt");
-        System.out.println(serverFile);
-        String latestUploadPhoto = fn.getOriginalFilename();
-        System.out.println(latestUploadPhoto);
+        
+        File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);        
         //write uploaded image to disk
         
         //우선 폴더를 두개를 만들어  before 폴더에 업로드 한다.
@@ -94,31 +149,52 @@ public class HomeController {
         } catch (IOException e) {
             System.out.println("error : " + e.getMessage());
         }
+        String path=dir.getAbsolutePath() + File.separator + filename;
+        //path=path.replaceAll("\\", "\\");
+        file_list.add(path);
+	}
+	
+	@RequestMapping(value = "/photo", method=RequestMethod.POST)
+    public String uploadImageCtlr(ModelMap model,
+                                  HttpServletRequest request,
+                                  MultipartRequest file
+                                  ) throws IOException{
+    	
+		request.setCharacterEncoding("UTF-8");
+		
+		MultipartFile voltege_fn=file.getFile("voltage");
+		MultipartFile degree_fn=file.getFile("degree");
+		MultipartFile battery_fn=file.getFile("battery");
+		MultipartFile buffer_fn=file.getFile("buffer");
+		MultipartFile period_fn=file.getFile("period");
+		
+		String before_filename;
+		Date today = new Date();
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-mm-ss");
+        String first_file_name=date.format(today);
         
-        //before 폴더에 있는 파일을 열어 작업을 한다.
-        StringBuilder sb=new StringBuilder();
-        try {
-            ////////////////////////////////////////////////////////////////
-            BufferedReader in = new BufferedReader(new FileReader(dir.getAbsolutePath() + File.separator + date.format(today)+"_before.txt"));
-            String s;
+        if(!(voltege_fn.getOriginalFilename().equals(""))) {
+             upload(voltege_fn,first_file_name+"_voltage.txt" );
+        }
+        if(!(degree_fn.getOriginalFilename().equals(""))) {
+        	 upload(degree_fn,first_file_name+"_degree.txt" );
+		}
+		if(!(battery_fn.getOriginalFilename().equals(""))) {
+			upload(battery_fn,first_file_name+"_battery.txt" );
+		}
+		if(!(buffer_fn.getOriginalFilename().equals(""))) {
+			upload(buffer_fn,first_file_name+"_buffer.txt" );
+		}
+		if(!(period_fn.getOriginalFilename().equals(""))) {
+			upload(period_fn,first_file_name+"_period.txt" );
+		}
+		
+		for(int i=0;i<file_list.size();i++) {
+			System.out.println(file_list.get(i).toString());
+		}
+		return "home";
+		
 
-            while ((s = in.readLine()) != null) {
-            	sb.append(s);
-            }
-            in.close();
-            ////////////////////////////////////////////////////////////////
-          } catch (IOException e) {
-              System.err.println(e); // 에러가 있다면 메시지 출력
-              System.exit(1);
-          }
-        
-        //sb에 있는 값을 ","으로 StringTokenizer 혹은 split을 사용하여 변환 로직 수행!!!
-        //수행한 값을 다시 파일 출력으로 만들어 준다 대신 이번엔  after 폴더로 저장 출력  
-        System.out.println(sb);
-        String filename=date.format(today)+"_after.txt";
-        return "redirect:/filedown?filename="+filename;
-        
-        
     }
 	
 }

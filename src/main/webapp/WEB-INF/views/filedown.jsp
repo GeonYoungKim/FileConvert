@@ -27,8 +27,7 @@
     File file = null;
     boolean skip = false;
     String client = "";
-    try{
-         
+    try{         
  
         // 파일을 읽어 스트림에 담기
         try{
