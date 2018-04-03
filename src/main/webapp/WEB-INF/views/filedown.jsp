@@ -16,10 +16,10 @@
     String savePath = "C:\\Users\\gunyoungkim\\file_after";
  
     // 서버에 실제 저장된 파일명
-    String filename = (String)request.getAttribute("filename") ;
+    String filename = (String)request.getAttribute("fileName") ;
      
     // 실제 내보낼 파일명
-    String orgfilename = (String)request.getAttribute("filename") ;
+    String orgfilename = (String)request.getAttribute("fileName") ;
       
  
     InputStream in = null;

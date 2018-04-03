@@ -41,7 +41,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 @Controller
 public class HomeController {
 	
-	List<String> file_list=new ArrayList<String>();
+	List<String> fileList=new ArrayList<String>();
 	
 	
 	@RequestMapping(value = "/home")
@@ -52,17 +52,17 @@ public class HomeController {
 	}
 	@RequestMapping(value = "/filedown")
 	public String filedown(HttpServletRequest request,Model model) {
-		String filename=request.getParameter("filename");
+		String fileName=request.getParameter("fileName");
 		System.out.println("filedown");
-		request.setAttribute("filename", filename);
+		request.setAttribute("fileName", fileName);
 		return "filedown";
 	}
 	@RequestMapping(value = "/down")
 	public String down(HttpServletRequest request,Model model) {
 		Date today = new Date();
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-mm-ss");
-        String first_file_name=date.format(today);
-        String filename_result=first_file_name+"_result.txt";
+        String firstFileName=date.format(today);
+        String fileNameResult=firstFileName+"_result.txt";
 		BufferedWriter bw=null;
 		BufferedReader br1 = null;
 		BufferedReader br2 = null;
@@ -71,12 +71,12 @@ public class HomeController {
 		BufferedReader br5 = null;
 		
 		try{
-			bw = new BufferedWriter(new FileWriter("C:\\Users\\gunyoungkim\\file_after\\"+filename_result));
-			br1 = new BufferedReader(new FileReader(file_list.get(0)));
-			br2 = new BufferedReader(new FileReader(file_list.get(1)));
-			br3 = new BufferedReader(new FileReader(file_list.get(2)));
-			br4 = new BufferedReader(new FileReader(file_list.get(3)));
-			br5 = new BufferedReader(new FileReader(file_list.get(4)));
+			bw = new BufferedWriter(new FileWriter("C:\\Users\\gunyoungkim\\file_after\\"+fileNameResult));
+			br1 = new BufferedReader(new FileReader(fileList.get(0)));
+			br2 = new BufferedReader(new FileReader(fileList.get(1)));
+			br3 = new BufferedReader(new FileReader(fileList.get(2)));
+			br4 = new BufferedReader(new FileReader(fileList.get(3)));
+			br5 = new BufferedReader(new FileReader(fileList.get(4)));
 			 
 	        String str1 = br1.readLine();
 	        String str2 = br2.readLine();
@@ -117,13 +117,13 @@ public class HomeController {
 			}catch(Exception e){			
 			}
 		}
-		file_list.clear();
-		System.out.println(file_list.size());
+		fileList.clear();
+		System.out.println(fileList.size());
         
-        return "redirect:/filedown?filename="+filename_result;
+        return "redirect:/filedown?fileName="+fileNameResult;
 	}
 	
-	public void upload(MultipartFile fn,String filename) {
+	public void upload(MultipartFile fn,String fileName) {
 		String rootPath = "C:\\Users\\gunyoungkim";
 		   
         
@@ -133,7 +133,7 @@ public class HomeController {
             dir.mkdirs();
         }
         
-        File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);        
+        File serverFile = new File(dir.getAbsolutePath() + File.separator + fileName);        
         //write uploaded image to disk
         
         //우선 폴더를 두개를 만들어  before 폴더에 업로드 한다.
@@ -149,9 +149,9 @@ public class HomeController {
         } catch (IOException e) {
             System.out.println("error : " + e.getMessage());
         }
-        String path=dir.getAbsolutePath() + File.separator + filename;
+        String path=dir.getAbsolutePath() + File.separator + fileName;
         //path=path.replaceAll("\\", "\\");
-        file_list.add(path);
+        fileList.add(path);
 	}
 	
 	@RequestMapping(value = "/photo", method=RequestMethod.POST)
@@ -168,29 +168,29 @@ public class HomeController {
 		MultipartFile buffer_fn=file.getFile("buffer");
 		MultipartFile period_fn=file.getFile("period");
 		
-		String before_filename;
+		String before_fileName;
 		Date today = new Date();
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-mm-ss");
-        String first_file_name=date.format(today);
+        String firstFileName=date.format(today);
         
         if(!(voltege_fn.getOriginalFilename().equals(""))) {
-             upload(voltege_fn,first_file_name+"_voltage.txt" );
+             upload(voltege_fn,firstFileName+"_voltage.txt" );
         }
         if(!(degree_fn.getOriginalFilename().equals(""))) {
-        	 upload(degree_fn,first_file_name+"_degree.txt" );
+        	 upload(degree_fn,firstFileName+"_degree.txt" );
 		}
 		if(!(battery_fn.getOriginalFilename().equals(""))) {
-			upload(battery_fn,first_file_name+"_battery.txt" );
+			upload(battery_fn,firstFileName+"_battery.txt" );
 		}
 		if(!(buffer_fn.getOriginalFilename().equals(""))) {
-			upload(buffer_fn,first_file_name+"_buffer.txt" );
+			upload(buffer_fn,firstFileName+"_buffer.txt" );
 		}
 		if(!(period_fn.getOriginalFilename().equals(""))) {
-			upload(period_fn,first_file_name+"_period.txt" );
+			upload(period_fn,firstFileName+"_period.txt" );
 		}
 		
-		for(int i=0;i<file_list.size();i++) {
-			System.out.println(file_list.get(i).toString());
+		for(int i=0;i<fileList.size();i++) {
+			System.out.println(fileList.get(i).toString());
 		}
 		return "home";
 		
