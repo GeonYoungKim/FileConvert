@@ -7,9 +7,6 @@ spring jsp multipartfile
 기능
 
 * 파일 업로드
+<img src = './img/main.JPG' width = '700' height = '450' />
 * 파일 다운로드
-
-
-<img src = './img/main.JPG' width = '600' height = '450' />
-
-<img src = './img/result.JPG' width = '600' height = '450' />
+<img src = './img/result.JPG' width = '400' height = '100' />
